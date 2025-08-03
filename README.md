@@ -121,6 +121,6 @@ Roadmap
 
 Interactive dashboard (in progress)
 
-Cloud deployment (Render, Fly.io, EC2)
+Cloud deployment (Render, Fly.io, EC2) - DONE (https://exchange-rate-api-vrj5.onrender.com/historical)
 
-Docker support
+Docker support (DONE)

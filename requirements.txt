@@ -4,3 +4,4 @@ selenium
 undetected-chromedriver
 python-dotenv
 APScheduler
+gunicorn

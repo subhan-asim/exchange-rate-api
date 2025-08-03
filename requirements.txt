@@ -4,4 +4,6 @@ selenium
 undetected-chromedriver
 python-dotenv
 APScheduler
+beautifulsoup4
+lxml
 gunicorn

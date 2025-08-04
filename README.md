@@ -113,6 +113,18 @@ timestamp TIMESTAMPTZ
 6. Run the application
 python main.py
 
+NEW FEATURES
+
+### POST /admin/scrape
+
+Triggers all scrapers to run manually (protected by basic auth).
+
+*Auth:* Basic Auth (set ADMIN_USERNAME and ADMIN_PASSWORD in .env)
+
+*Example (using curl):*
+
+```bash
+curl -X POST http://localhost:5000/admin/scrape -u admin:yourpassword
 
 
 The scraper will run every 10 minutes and serve the API at: http://localhost:5000
@@ -121,6 +133,6 @@ Roadmap
 
 Interactive dashboard (in progress)
 
-Cloud deployment (Render, Fly.io, EC2) - DONE (https://exchange-rate-api-vrj5.onrender.com/historical)
+Cloud deployment (Render, Fly.io, EC2) - Planning on some changes
 
 Docker support (DONE)

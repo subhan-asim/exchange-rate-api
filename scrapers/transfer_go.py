@@ -1,50 +1,50 @@
 from datetime import datetime
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
-from concurrent.futures import ThreadPoolExecutor, as_completed
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as ec
+from selenium.webdriver.support.ui import WebDriverWait
+from concurrent.futures import ThreadPoolExecutor, as_completed
 import time
 
 pairs = [
     ('usd', 'pkr'),  
-    ('usd', 'jpy'), ]
+    ('eur', 'usd'),  
+    ('gbp', 'usd'),   
+    ('usd', 'jpy'),   
+    ('usd', 'chf'),   
+    ('usd', 'cad'),   
+    ('aud', 'usd'),   
+    ('eur', 'gbp')    ]
 def scrape(pair):
     options = Options()
     options.add_argument("--headless")
     options.add_argument("--disable-gpu")
     options.add_argument("--no-sandbox")
-
     driver = webdriver.Chrome(options=options)
+    wait = WebDriverWait(driver, 15)
     try:
-        url = f"https://www.remitly.com/us/en/currency-converter/{pair[0]}-to-{pair[1]}-rate"
+        url = f"https://www.transfergo.com/currency-converter/{pair[0]}-to-{pair[1]}"
         driver.get(url)
-        time.sleep(5)  # Let the JS load
 
         # Find exchange rate
-        rate_elem = driver.find_element(By.XPATH, "/html/body/div[4]/div/div[1]/div/div[2]/div/div[3]/div/div/div[2]")
-        rate_text = rate_elem.text.strip().split("=")[1].strip().split(" ")[0]  # "1 USD = 280.50 PKR" → 280.50
+        rate_elem = wait.until(ec.presence_of_element_located((By.CLASS_NAME, "currency-converter-calculator__exchange-rate-value")))
+        rate_text = rate_elem.text.strip()
         rate = float(rate_text)
 
-        # Find fee
-        fee_elem = driver.find_element(By.XPATH, '//*[@id="send-recv-calc-container"]/div[4]/div[1]/div[2]')
-        fee_text = fee_elem.text.strip().replace(f" {pair[0].upper()}", "")
-        fee = float(fee_text)
 
         return {
-            "provider": "Remitly",
+            "provider": "TransferGo",
             "from_currency": f"{pair[0].upper()}",
             "to_currency": f"{pair[1].upper()}",
             "rate": rate,
-            "fee": fee,
+            "fee": 0,
             "timestamp": datetime.now().isoformat()
         }
     except:
         pass
-
-
     finally:
         driver.quit()
-
 def threading():
     data = []
     with ThreadPoolExecutor(max_workers=len(pairs)) as executor:

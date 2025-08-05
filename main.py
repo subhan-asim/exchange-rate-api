@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, Response
+from flask import Flask, request, jsonify, Response, render_template
 from apscheduler.schedulers.background import BackgroundScheduler
 from datetime import datetime
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -73,6 +73,10 @@ def requires_auth(f):
 # ─────────────────────────────
 # Routes
 # ─────────────────────────────
+
+@app.route("/dashboard")
+def dashboard():
+    return render_template("dashboard.html")
 
 @app.route("/rates", methods=["GET"])
 def get_latest_rates():

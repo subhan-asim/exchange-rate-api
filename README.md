@@ -131,8 +131,14 @@ The scraper will run every 10 minutes and serve the API at: http://localhost:500
 
 Roadmap
 
-Interactive dashboard (in progress)
+Interactive dashboard (DONE)
 
-Cloud deployment (Render, Fly.io, EC2) - Planning on some changes
+Cloud deployment (Render, Fly.io, EC2) - (DONE)
 
 Docker support (DONE)
+
+---
+
+## 👨‍💻 Author
+
+Made with 🔥 by [Subhan Asim](https://github.com/subhan-asim/exchange-rate-api)

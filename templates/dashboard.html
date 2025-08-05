@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Exchange Rate Dashboard</title>
+    <meta charset="UTF-8">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body class="container py-4">
+
+    <h1 class="mb-4">📊 Exchange Rate Dashboard</h1>
+
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <label class="form-label">From Currency:</label>
+            <select id="from_currency" class="form-select">
+                <option value="USD">USD</option>
+                <option value="EUR">EUR</option>
+                <option value="GBP">GBP</option>
+                <option value="AUD">AUD</option>
+                <option value="PKR">PKR</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label class="form-label">To Currency:</label>
+            <select id="to_currency" class="form-select">
+                <option value="PKR">PKR</option>
+                <option value="USD">USD</option>
+                <option value="EUR">EUR</option>
+                <option value="GBP">GBP</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label class="form-label">Provider:</label>
+            <select id="provider" class="form-select">
+                <option value="">All</option>
+                <option value="Wise">Wise</option>
+                <option value="Remitly">Remitly</option>
+                <option value="Western Union">Western Union</option>
+                <option value="Instarem">Instarem</option>
+                <option value="OFX">OFX</option>
+                <option value="TransferGo">TransferGo</option>
+            </select>
+        </div>
+        <div class="col-md-3 d-flex align-items-end">
+            <button onclick="loadData()" class="btn btn-primary w-100">Load</button>
+        </div>
+    </div>
+
+    <canvas id="rateChart" height="100"></canvas>
+
+    <script>
+        async function loadData() {
+            const from = document.getElementById("from_currency").value;
+            const to = document.getElementById("to_currency").value;
+            const provider = document.getElementById("provider").value;
+
+            const now = new Date();
+            const fromDate = new Date(now.getTime() - 72 * 60 * 60 * 1000);  // 24h ago
+
+            const url = new URL("/historical", window.location.origin);
+            url.searchParams.set("from", from);
+            url.searchParams.set("to", to);
+            url.searchParams.set("from", fromDate.toISOString().split("T")[0]);
+            url.searchParams.set("to", now.toISOString().split("T")[0]);
+            if (provider) url.searchParams.set("provider", provider);
+
+            const res = await fetch(url);
+            const data = await res.json();
+
+            const labels = data.map(d => new Date(d.timestamp).toLocaleString());
+            const rates = data.map(d => d.rate);
+
+            updateChart(labels, rates);
+        }
+
+        let chart;
+        function updateChart(labels, data) {
+            if (chart) chart.destroy();
+            const ctx = document.getElementById("rateChart").getContext("2d");
+            chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Exchange Rate',
+                        data: data,
+                        borderColor: 'blue',
+                        backgroundColor: 'lightblue',
+                        tension: 0.3,
+                        fill: true
+                    }]
+                },
+                options: {
+                    scales: {
+                        x: {
+                            ticks: { maxRotation: 45, minRotation: 45 }
+                        }
+                    }
+                }
+            });
+        }
+
+        loadData(); // initial load
+    </script>
+
+</body>
+
+</html>
